@@ -1,4 +1,3 @@
-import time
 
 
 class GroupHelper:
@@ -54,9 +53,7 @@ class GroupHelper:
         wd.find_element_by_name("group_footer").click()
         wd.find_element_by_name("group_footer").clear()
         wd.find_element_by_name("group_footer").send_keys(footer)
-        time.sleep(3)
         wd.find_element_by_name("update").click()
-        #time.sleep(15)
         self.return_to_groups_page()
 
 
