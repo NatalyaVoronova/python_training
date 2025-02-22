@@ -1,3 +1,6 @@
+import time
+
+
 class GroupHelper:
 
     def __init__(self, app):
@@ -35,7 +38,7 @@ class GroupHelper:
         wd.find_element_by_name("delete").click()
         self.return_to_groups_page()
 
-    def modify_first_group(self):
+    def edit_first_group(self, name, header, footer):
         wd = self.app.wd
         self.open_groups_page()
         # select first group
@@ -44,14 +47,16 @@ class GroupHelper:
         wd.find_element_by_name("edit").click()
         wd.find_element_by_name("group_name").click()
         wd.find_element_by_name("group_name").clear()
-        wd.find_element_by_name("group_name").send_keys("Group's name is New")
+        wd.find_element_by_name("group_name").send_keys(name)
         wd.find_element_by_name("group_header").click()
         wd.find_element_by_name("group_header").clear()
-        wd.find_element_by_name("group_header").send_keys("New header")
+        wd.find_element_by_name("group_header").send_keys(header)
         wd.find_element_by_name("group_footer").click()
         wd.find_element_by_name("group_footer").clear()
-        wd.find_element_by_name("group_footer").send_keys("New footer description")
+        wd.find_element_by_name("group_footer").send_keys(footer)
+        time.sleep(3)
         wd.find_element_by_name("update").click()
+        #time.sleep(15)
         self.return_to_groups_page()
 
 
