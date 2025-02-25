@@ -88,6 +88,7 @@ class ContactHelper:
 
     def edit(self, last_name, first_name):
         wd = self.app.wd
+        self.app.open_home_page()
         # init contact modify
         wd.find_element_by_name("selected[]").click()
         wd.find_element_by_xpath("//tr[2]/td[8]/a/img").click()
@@ -102,5 +103,6 @@ class ContactHelper:
 
     def delete(self):
         wd = self.app.wd
+        self.app.open_home_page()
         wd.find_element_by_name("selected[]").click()
         wd.find_element_by_xpath("//div[4]/form[2]/div[2]/input").click()
