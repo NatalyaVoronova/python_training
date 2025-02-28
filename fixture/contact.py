@@ -81,12 +81,10 @@ class ContactHelper:
         wd.find_element_by_name("ayear").send_keys("2023")
         wd.find_element_by_name("new_group").click()
         Select(wd.find_element_by_name("new_group")).select_by_visible_text(contact.new_group)
-        #wd.find_element_by_xpath("//div[@id='content']/form/select[5]/option[0]").click()
-        #wd.find_element_by_xpath("//div[@id='content']/form/input[20]").click()
         wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         self.app.return_to_home_page()
 
-    def edit(self, last_name, first_name):
+    def edit(self, contact):
         wd = self.app.wd
         self.app.open_home_page()
         # init contact modify
@@ -94,10 +92,10 @@ class ContactHelper:
         wd.find_element_by_xpath("//tr[2]/td[8]/a/img").click()
         wd.find_element_by_name("firstname").click()
         wd.find_element_by_name("firstname").clear()
-        wd.find_element_by_name("firstname").send_keys(first_name)
+        wd.find_element_by_name("firstname").send_keys(contact.firstname)
         wd.find_element_by_name("lastname").click()
         wd.find_element_by_name("lastname").clear()
-        wd.find_element_by_name("lastname").send_keys(last_name)
+        wd.find_element_by_name("lastname").send_keys(contact.lastname)
         wd.find_element_by_xpath("//input[21]").click()
         self.app.return_to_home_page()
 
