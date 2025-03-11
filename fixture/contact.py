@@ -20,11 +20,10 @@ class ContactHelper:
         self.app.return_to_home_page()
         self.contact_cache = None
 
-    def edit_first_contact(self, contact):
+    def edit_first_contact(self, contact, index):
         wd = self.app.wd
         self.app.open_home_page()
-        self.select_first_contact()
-        wd.find_element_by_xpath("//tr[2]/td[8]/a/img").click()
+        wd.find_elements_by_xpath("//img[@alt='Edit']")[index].click()
         self.fill_contact_field(contact)
         wd.find_element_by_xpath("//input[21]").click()
         self.app.return_to_home_page()
@@ -74,10 +73,20 @@ class ContactHelper:
         self.change_field_select_value("amonth", contact.amonth)
         self.change_field_value("ayear", contact.ayear)
 
-    def delete(self):
+    def select_first_contact(self):
+        self.select_contact_by_index(0)
+
+    def select_contact_by_index(self, index):
+        wd = self.app.wd
+        wd.find_elements_by_name("selected[]")[index].click()
+
+    def delete_first_contact(self):
+        self.delete_contact_by_index(0)
+
+    def delete_contact_by_index(self, index):
         wd = self.app.wd
         self.app.open_home_page()
-        wd.find_element_by_name("selected[]").click()
+        self.select_contact_by_index(index)
         wd.find_element_by_xpath("//div[4]/form[2]/div[2]/input").click()
         self.contact_cache = None
 
