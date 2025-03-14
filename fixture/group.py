@@ -32,8 +32,10 @@ class GroupHelper:
         self.fill_group_form(group)
         # submit group creation
         wd.find_element_by_name("submit").click()
+        wd.implicitly_wait(40)
         self.return_to_groups_page()
         self.group_cache = None
+
 
     def delete_first_group(self):
         self.delete_group_by_index(0)
