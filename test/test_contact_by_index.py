@@ -18,7 +18,11 @@ def clear(s):
 
 
 def clear_end(s):
-    return re.sub(r'\s$', '', s)
+    return re.sub(r'\s{2,}|(\s$)', '', s)
+
+
+def clear_spase(s):
+    return re.sub(r'\s{2,}|(\s$)', ' ', s).strip()
 
 
 def merge_phones_like_on_phone_page(contact):
@@ -31,6 +35,6 @@ def merge_phones_like_on_phone_page(contact):
 
 def merge_emails_like_on_phone_page(contact):
     return "\n".join(filter(lambda x: x != "",
-                            map(lambda x: clear(x),
+                            map(lambda x: clear_spase(x),
                                 filter(lambda x: x is not None,
-                                       [contact.email1, contact.email2, contact.email3]))))
+                                       [contact.email, contact.email2, contact.email3]))))
