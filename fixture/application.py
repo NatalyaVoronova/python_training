@@ -1,4 +1,5 @@
 from selenium import webdriver
+import pytest
 from fixture.contact import ContactHelper
 from fixture.group import GroupHelper
 from fixture.session import SessionHelper
