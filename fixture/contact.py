@@ -14,9 +14,10 @@ class ContactHelper:
         wd.find_element_by_link_text("add new").click()
         # fill contact form
         self.fill_contact_field(contact)
-        wd.find_element_by_name("new_group").click()
-        Select(wd.find_element_by_name("new_group")).select_by_visible_text(contact.new_group)
-        wd.find_element_by_name("new_group").click()
+        self.change_field_select_value("new_group", contact.new_group)
+        # wd.find_element_by_name("new_group").click()
+        # Select(wd.find_element_by_name("new_group")).select_by_visible_text(contact.new_group)
+        # wd.find_element_by_name("new_group").click()
         wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         self.app.return_to_home_page()
         self.contact_cache = None
