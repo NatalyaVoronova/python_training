@@ -1,22 +1,22 @@
-# import pymysql.cursors  # mysql.connector
-# connection = mysql.connector.connect()
-from fixture.db import DbFixture
 
-# connection = pymysql.connect(host="127.0.0.1", database="addressbook", user="root", password="")
-db = DbFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+from fixture.orm import ORMFixture
+
+
+db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+
 
 # try:
-#     groups = db.get_group_list()
-#     for group in groups:
-#         print(group)
-#      print(len(group))
+#     l = db.get_group_list()
+#     for item in l:
+#         print(item)
+#     print(len(l))
 # finally:
-#     db.destroy()
+#     pass # db.destroy()
 
 try:
-    contacts = db.get_contact_list()
-    for contact in contacts:
-        print(contact)
-    print(len(contacts))
+    l = db.get_contact_list()
+    for item in l:
+        print(item)
+    print(len(l))
 finally:
-    db.destroy()
+    pass # db.destroy()
