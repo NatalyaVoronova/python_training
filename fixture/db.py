@@ -2,6 +2,7 @@ import pymysql.cursors
 from model.group import Group
 from model.contact import Contact
 
+
 class DbFixture:
 
     def __init__(self, host, name, user, password):
@@ -28,6 +29,7 @@ class DbFixture:
         cursor = self.connection.cursor()
         try:
             # cursor.execute("select id, firstname, lastname from addressbook where deprecated='0000-00-00 00:00:00'")
+            # deprecated не используем так как в БД только те контакты, которые есть в интерфейсе
             cursor.execute("select id, firstname, lastname from addressbook")
             for row in cursor:
                 (id, firstname, lastname) = row
@@ -35,7 +37,6 @@ class DbFixture:
         finally:
             cursor.close()
         return list
-
 
     def destroy(self):
         self.connection.close()

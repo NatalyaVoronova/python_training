@@ -15,40 +15,9 @@ class ContactHelper:
         # fill contact form
         self.fill_contact_field(contact)
         self.change_field_select_value("new_group", contact.new_group)
-        # wd.find_element_by_name("new_group").click()
-        # Select(wd.find_element_by_name("new_group")).select_by_visible_text(contact.new_group)
-        # wd.find_element_by_name("new_group").click()
         wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         self.app.return_to_home_page()
         self.contact_cache = None
-
-    def edit_contact_by_index(self, contact, index):
-        wd = self.app.wd
-        self.app.open_home_page()
-        wd.find_elements_by_xpath("//img[@alt='Edit']")[index].click()
-        self.fill_contact_field(contact)
-        wd.find_element_by_xpath("//input[21]").click()
-        self.app.return_to_home_page()
-        self.contact_cache = None
-
-    def select_first_contact(self):
-        wd = self.app.wd
-        # init contact modify
-        wd.find_element_by_name("selected[]").click()
-
-    def change_field_value(self, field_name, text):
-        wd = self.app.wd
-        if text is not None:
-            wd.find_element_by_name(field_name).click()
-            wd.find_element_by_name(field_name).clear()
-            wd.find_element_by_name(field_name).send_keys(text)
-
-    def change_field_select_value(self, field_name, text):
-        wd = self.app.wd
-        if text is not None:
-            wd.find_element_by_name(field_name).click()
-            Select(wd.find_element_by_name(field_name)).select_by_visible_text(text)
-            wd.find_element_by_name(field_name).click()
 
     def fill_contact_field(self, contact):
         wd = self.app.wd
@@ -76,12 +45,52 @@ class ContactHelper:
         self.change_field_value("ayear", contact.ayear)
         self.change_field_value("phone2", contact.secondary_phone)
 
+    def change_field_value(self, field_name, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element_by_name(field_name).click()
+            wd.find_element_by_name(field_name).clear()
+            wd.find_element_by_name(field_name).send_keys(text)
+
+    def change_field_select_value(self, field_name, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element_by_name(field_name).click()
+            Select(wd.find_element_by_name(field_name)).select_by_visible_text(text)
+            wd.find_element_by_name(field_name).click()
+
+    def edit_contact_by_index(self, contact, index):
+        wd = self.app.wd
+        self.app.open_home_page()
+        wd.find_elements_by_xpath("//img[@alt='Edit']")[index].click()
+        self.fill_contact_field(contact)
+        wd.find_element_by_xpath("//input[21]").click()
+        self.app.return_to_home_page()
+        self.contact_cache = None
+
+    def edit_contact_by_id(self, id, contact):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.select_contact_by_id(id)
+        self.fill_contact_field(contact)
+        wd.find_element_by_xpath("//input[21]").click()
+        self.app.return_to_home_page()
+        self.contact_cache = None
+
     def select_first_contact(self):
-        self.select_contact_by_index(0)
+        wd = self.app.wd
+        # init contact modify
+        wd.find_element_by_name("selected[]").click()
+        # self.select_contact_by_index(0)
 
     def select_contact_by_index(self, index):
         wd = self.app.wd
         wd.find_elements_by_name("selected[]")[index].click()
+
+    def select_contact_by_id(self, id):
+        wd = self.app.wd
+        # init contact modify
+        wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
 
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
@@ -90,6 +99,13 @@ class ContactHelper:
         wd = self.app.wd
         self.app.open_home_page()
         self.select_contact_by_index(index)
+        wd.find_element_by_xpath("//div[4]/form[2]/div[2]/input").click()
+        self.contact_cache = None
+
+    def delete_contact_by_id(self, id):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.select_contact_by_id(id)
         wd.find_element_by_xpath("//div[4]/form[2]/div[2]/input").click()
         self.contact_cache = None
 
@@ -116,7 +132,6 @@ class ContactHelper:
                 self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id,
                                                   all_phones_from_home_page=all_phones,
                                                   all_emails_from_home_page=all_emails, address=address))
-
 
                 # self.contact_cache.append(Contact(firstname=text[2].text, lastname=text[1].text, id=id,
                 #                                   all_phones_from_home_page=all_phones))

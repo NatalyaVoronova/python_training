@@ -9,14 +9,14 @@ class ORMFixture:
 
     db = Database()
 
-    class ORMGroup(db.Entity):
-        _table_ = 'group_list'
+    class ORMGroup(db.Entity):  # db.Entity - вложенный класс описывает объекты базы данных
+        _table_ = 'group_list'  # название таблицы
         id = PrimaryKey(int, column='group_id')
         name = Optional(str, column='group_name')
         header = Optional(str, column='group_header')
         footer = Optional(str, column='group_footer')
-        # связь осуществляется через таблицу table="address_in_groups;
-        # lazy - информация будет извлекаться в тот момент, когда мы обращаемся к свойству
+        # связь осуществляется через таблицу table="address_in_groups;  # reverse="groups" -  пара к Контакту это параметр группы
+        # lazy - информация будет извлекаться в тот момент, когда мы обращаемся к свойству, а не бесконечно
         contacts = Set(lambda: ORMFixture.ORMContact, table="address_in_groups", column="id", reverse="groups", lazy=True)
 
     class ORMContact(db.Entity):
@@ -24,24 +24,30 @@ class ORMFixture:
         id = PrimaryKey(int, column='id')
         firstname = Optional(str, column='firstname')
         lastname = Optional(str, column='lastname')
-        deprecated = Optional(datetime, column='deprecated')
+        deprecated = Optional(datetime, column='deprecated')  # необходимо для фильтрации
         groups = Set(lambda: ORMFixture.ORMGroup, table="address_in_groups", column="group_id", reverse="contacts", lazy=True)
 
-    def __init__(self, host, name, user, password):
+    def __init__(self, host, name, user, password):  # привязка к базе данных через bind
         self.db.bind('mysql', host=host, database=name, user=user, password=password)  # , conv=decoders)
+        # generate_mapping - сопоставление свойств описанных выше классов с таблицами БД и их полями
         self.db.generate_mapping()
-        sql_debug(True)
+        sql_debug(True)  # покажет какие sql-запросы передаются
 
-    def convert_groups_to_model(self, groups):
+    def convert_groups_to_model(self, groups):  # преобразовывает ORM в обычный объект Group
         def convert(group):
             return Group(id=str(group.id), name=group.name, header=group.header, footer=group.footer)
         return list(map(convert, groups))
 
     @db_session
-    def get_group_list(self):
-        return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))
+    def get_group_list(self):  #
+        # list(select(g for g in ORMFixture.ORMGroup))  # вернет список ORM-объектов, т.е. без id + имя + описание группы
+        return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))  # нужна вспомогатательная f
 
-    def convert_contacts_to_model(self, contacts):
+    # def get_group_list(self):  # вариант указания работы сессии с бд через with
+    #     with db_session:
+    #         return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))
+
+    def convert_contacts_to_model(self, contacts):  # преобразовывает ORM в обычный объект Contact
         def convert(contact):
             return Contact(id=str(contact.id), firstname=contact.firstname, lastname=contact.lastname)
         return list(map(convert, contacts))

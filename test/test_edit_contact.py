@@ -7,7 +7,8 @@ import string
 
 def random_string(prefix, maxlen):
     symbols = string.ascii_letters + string.digits + " " * 10
-    return prefix + "".join([random.choice(symbols) for i in range(random.randrange(maxlen))])
+    return prefix + "".join([random.choice(symbols) for _ in range(random.randrange(maxlen))])
+
 
 def random_digits(maxamount):
     return str(random.randrange(1, maxamount))
@@ -17,6 +18,7 @@ def random_month():
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
               "November", "December"]
     return random.choice(months)
+
 
 testdata = [Contact(firstname="", middlename="", lastname="")] + [
     Contact(firstname=random_string("firstname", 10), middlename=random_string("middlename", 10),
@@ -33,15 +35,20 @@ testdata = [Contact(firstname="", middlename="", lastname="")] + [
 ]
 
 
-@pytest.mark.parametrize("contact", testdata, ids=[repr(x) for x in testdata])
-def test_edit_some_contact(app, contact):
-    if app.contact.count() == 0:
-        app.contact.create(Contact(lastname="From edit function", new_group="[none]"))
-    old_contacts = app.contact.get_contact_list()
-    index = random.randrange(len(old_contacts))
-    contact.id = old_contacts[index].id
-    app.contact.edit_contact_by_index(contact, index)
-    new_contacts = app.contact.get_contact_list()
-    assert len(old_contacts) == app.contact.count()
-    old_contacts[index] = contact
-    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)
+# @pytest.mark.parametrize("contact", testdata, ids=[repr(x) for x in testdata])
+def test_edit_contact_by_id(app, db, check_ui):
+    if len(db.get_contact_list()) == 0:
+        app.contact.create(Contact(firstname="From edit function", new_group="[none]"))
+    old_contacts = db.get_contact_list()
+    mod_contact = random.choice(old_contacts)
+    contact = Contact(firstname="Cat", middlename="Second", lastname="Boooook")
+    contact.id = mod_contact.id
+    app.contact.edit_contact_by_id(mod_contact.id, contact)
+    new_contacts = db.get_contact_list()
+    old_contact_f = next(c for c in old_contacts if c.id == contact.id)
+    old_contact_f.firstname = contact.firstname
+    old_contact_f.lastname = contact.lastname
+    assert old_contacts == new_contacts
+    if check_ui:
+        assert sorted(old_contacts, key=Contact.id_or_max) == sorted(app.contact.get_contact_list(),
+                                                                     key=Contact.id_or_max)
