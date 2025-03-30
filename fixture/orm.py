@@ -16,7 +16,7 @@ class ORMFixture:
         header = Optional(str, column='group_header')
         footer = Optional(str, column='group_footer')
         # связь осуществляется через таблицу table="address_in_groups;  # reverse="groups" -  пара к Контакту это параметр группы
-        # lazy - информация будет извлекаться в тот момент, когда мы обращаемся к свойству, а не бесконечно
+        # lazy - информация будет извлекаться в тот момент, когда мы обращаемся к свойству, а не рекурсивно по всем связям м/у объектами
         contacts = Set(lambda: ORMFixture.ORMContact, table="address_in_groups", column="id", reverse="groups", lazy=True)
 
     class ORMContact(db.Entity):
@@ -62,7 +62,18 @@ class ORMFixture:
         return self.convert_contacts_to_model(orm_group.contacts)
 
     @db_session
+    def get_contact_in_group_by_id(self, id):
+        orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == id))[0]
+        return self.convert_contacts_to_model(orm_group.contacts)
+
+    @db_session
     def get_contacts_not_in_group(self, group):
         orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == group.id))[0]
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if c.deprecated is None and orm_group not in c.groups))
+
+    @db_session
+    def get_contacts_not_in_group_by_id(self, id):
+        orm_group = list(select(g for g in ORMFixture.ORMGroup if g.id == id))[0]
         return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if c.deprecated is None and orm_group not in c.groups))

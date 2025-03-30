@@ -8,6 +8,8 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
+    contact_cache = None
+
     def create(self, contact):
         wd = self.app.wd
         # init contact creation
@@ -18,6 +20,11 @@ class ContactHelper:
         wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         self.app.return_to_home_page()
         self.contact_cache = None
+
+    # def add(self):
+    #     wd = self.app.wd
+    #     wd.open_home_page()
+    #     wd.find_element_by_link_text("add new").click()
 
     def fill_contact_field(self, contact):
         wd = self.app.wd
@@ -59,6 +66,19 @@ class ContactHelper:
             Select(wd.find_element_by_name(field_name)).select_by_visible_text(text)
             wd.find_element_by_name(field_name).click()
 
+
+    def click_add_too(self):
+        wd = self.app.wd
+        wd.find_element_by_name("add").click()
+
+    def change_select_value_by_value(self, name, value):
+        wd = self.app.wd
+        Select(wd.find_element_by_name(name)).select_by_value(value)
+
+    def change_select_value_by_index(self, field_name, index):
+        wd = self.app.wd
+        Select(wd.find_element_by_name(field_name)).select_by_index(index)
+
     def edit_contact_by_index(self, contact, index):
         wd = self.app.wd
         self.app.open_home_page()
@@ -92,6 +112,10 @@ class ContactHelper:
         # init contact modify
         wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
 
+    def select_contact_by_id_to_add(self, id):
+        wd = self.app.wd
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
 
@@ -114,7 +138,9 @@ class ContactHelper:
         self.app.open_home_page()
         return len(wd.find_elements_by_name("selected[]"))
 
-    contact_cache = None
+    def count_contacts_on_page(self):
+        wd = self.app.wd
+        return len(wd.find_elements_by_name("selected[]"))
 
     def get_contact_list(self):
         if self.contact_cache is None:
@@ -180,3 +206,19 @@ class ContactHelper:
         secondary_phone = re.search("P: (.*)", text).group(1)
         return Contact(home_phone=home_phone, mobile_phone=mobile_phone,
                        work_phone=work_phone, secondary_phone=secondary_phone)
+
+    def get_group_list(self):
+        group_list = []
+        wd = self.app.wd
+        select = wd.find_element_by_name("to_group")
+        for element in select.find_elements_by_tag_name("option"):
+            id = element.get_attribute("value")
+            group_list.append(id)
+        return list(group_list)
+
+    def add_contact_in_group(self, g_id, c_id):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.select_contact_by_id_to_add(c_id)
+        wd.find_element_by_css_selector(f'select[name = to_group] > option[value = "{g_id}"').click()
+        wd.find_element_by_name("add").click()
