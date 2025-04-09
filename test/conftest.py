@@ -11,9 +11,10 @@ fixture = None
 target = None
 
 
-def load_config(file):
+def load_config(file):  # загрузка конфигурации
     global target
     if target is None:
+        # путь к файлу target.json от места положения файла conftest
         config_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), file)
         with open(config_file) as f:
             target = json.load(f)
@@ -36,21 +37,19 @@ def db(request):
     db_config = load_config(request.config.getoption("--target"))["db"]
     dbfixture = DbFixture(host=db_config["host"], name=db_config["name"], user=db_config["user"],
                           password=db_config["password"])
-
     def fin():
         dbfixture.destroy()
-
     request.addfinalizer(fin)
     return dbfixture
 
 
 @pytest.fixture(scope="session")
-def orm_db(request):
+def orm(request):
     db_config = load_config(request.config.getoption("--target"))["db"]
-    ormfixture = ORMFixture(host=db_config['host'], name=db_config['name'], user=db_config['user'],
+    dbfixture = ORMFixture(host=db_config['host'], name=db_config['name'], user=db_config['user'],
                             password=db_config['password'])
 
-    return ormfixture
+    return dbfixture
 
 
 @pytest.fixture(scope="session", autouse=True)  # фикстура создается одна для всех тестов
@@ -72,8 +71,7 @@ def pytest_addoption(parser):
     # parser.addoption("--browser", action="store", default="firefox")
     parser.addoption("--browser", action="store", default="chrome")
     parser.addoption("--target", action="store", default="target.json")
-    parser.addoption("--check_ui",
-                     action="store_true")  # если опция прописана в конфиг запуска - True, и False если отсутствует
+    parser.addoption("--check_ui", action="store_true")  # опция прописана в конфиг запуска - True,и отсутствует - False
 
 
 def pytest_generate_tests(metafunc):

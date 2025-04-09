@@ -216,9 +216,17 @@ class ContactHelper:
             group_list.append(id)
         return list(group_list)
 
-    def add_contact_in_group(self, g_id, c_id):
+    def add_contact_in_group(self, contact_id, group_id):
         wd = self.app.wd
         self.app.open_home_page()
-        self.select_contact_by_id_to_add(c_id)
-        wd.find_element_by_css_selector(f'select[name = to_group] > option[value = "{g_id}"').click()
+        self.select_contact_by_id_to_add(contact_id)
+        wd.find_element_by_css_selector(f'select[name = to_group] > option[value = "{group_id}"').click()
         wd.find_element_by_name("add").click()
+
+    def del_contact_from_group(self, contact_id, group_id):
+        wd = self.app.wd
+        self.app.open_home_page()
+        wd.find_element_by_name("group").click()
+        wd.find_element_by_xpath("//option[@value='%s']" % group_id).click()
+        wd.find_element_by_xpath('//input[@id="%s"]' % contact_id).click()
+        wd.find_element_by_name("remove").click()
